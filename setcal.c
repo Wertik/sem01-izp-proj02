@@ -1,6 +1,6 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 
 struct set_t {
@@ -59,7 +59,7 @@ void add_element(Set *set, char *element) {
 }
 
 Set *create_set(unsigned identifier) {
-    Set *set = malloc(sizeof(Set) + sizeof(char*));
+    Set *set = malloc(sizeof(Set) + sizeof(char *));
 
     if (!set) {
         fprintf(stderr, "Failed to allocate memory.\n");
@@ -76,7 +76,8 @@ Set *create_set(unsigned identifier) {
 void printr(Relation *relation) {
     printf("%u:[", relation->identifier);
     for (unsigned i = 0; i < relation->size; i++) {
-        printf("(%s, %s)", relation->elements[i].first, relation->elements[i].second);
+        printf("(%s, %s)", relation->elements[i].first,
+               relation->elements[i].second);
         if (i < relation->size - 1) {
             printf(", ");
         }
@@ -85,7 +86,8 @@ void printr(Relation *relation) {
 }
 
 void add_pair(Relation *relation, Pair pair) {
-    relation = realloc(relation, sizeof(Relation) + sizeof(Pair) * (relation->size + 1));
+    relation = realloc(relation,
+                       sizeof(Relation) + sizeof(Pair) * (relation->size + 1));
 
     if (!relation) {
         fprintf(stderr, "Failed to allocate memory.\n");
@@ -112,33 +114,47 @@ Relation *create_relation(unsigned identifier) {
     return relation;
 }
 
+void add_set(Set *sets, Set set) {}
+
 int main(int argc, const char *argv[]) {
+    (void)argc;
+    (void)argv;
 
-    (void) argc;
-    (void) argv;
+    FILE *file = fopen("./cmds.txt", "r");
 
-    Set *set = create_set(1);
+    if (!file) {
+        fprintf(stderr, "Couldn't open file.\n");
+        return EXIT_FAILURE;
+    }
 
-    add_element(set, "hello");
-    add_element(set, "world");
+    char buffer[102];
 
-    prints(set);
+    Set sets[0];           // sets
+    Relation relation[0];  // relations
 
-    Relation *relation = create_relation(2);
+    while (fgets(buffer, 102, file)) {
+        for (int n = 0; n < 102; n++) {
+            if (buffer[n] == '\n') {
+                buffer[n] = '\0';
+                break;
+            }
+        }
 
-    add_pair(relation, (Pair) {
-        "hello",
-        "world"
-    });
+        switch (buffer[0]) {
+            case 'U':
+                // define a universum
+                break;
+            case 'S':
+                // define a set
+                break;
+            case 'R':
+                // define a relation
+                break;
+            case 'C':
+                // run a command
+                break;
+        }
+    }
 
-    add_pair(relation, (Pair) {
-        "bye",
-        "world"
-    });
-
-    printr(relation);
-
-    free(set);
-    free(relation);
     return 0;
 }
